@@ -32,7 +32,7 @@ body {
 }
 
 .search-form input[type='text'] {
-  width: 400px;
+  width: 300px;
   padding: 10px;
   font-size: 16px;
   background-color: transparent;
