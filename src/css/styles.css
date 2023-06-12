@@ -1,0 +1,130 @@
+body {
+  background: linear-gradient(
+    100deg,
+    #a14258,
+    #b37a40,
+    #3e655f,
+    #aa535d,
+    #5d75a5
+  );
+  background-size: 600% 600%;
+  animation: gradientAnimation 10s ease-in-out infinite;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 0%;
+  }
+  50% {
+    background-position: 100% 100%;
+  }
+  100% {
+    background-position: 0% 0%;
+  }
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 50px;
+  margin-bottom: 50px;
+}
+
+.search-form input[type='text'] {
+  width: 400px;
+  padding: 10px;
+  font-size: 16px;
+  background-color: transparent;
+  box-shadow: 0 0 20px #eee;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-right: 10px;
+}
+
+.search-form button[type='submit'] {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: transparent;
+  color: white;
+  box-shadow: 0 0 20px #eee;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-form button[type='submit']:hover {
+  background-color: #45a049;
+}
+
+.search-form input[type='text']::placeholder {
+  color: #ccc;
+}
+.gallery {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 20px;
+}
+
+.photo-card {
+  width: 300px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  transition: transform 0.3s ease;
+}
+.photo-card:hover {
+  transform: scale(1.03);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+.photo-card a {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.photo-card img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.photo-card .info {
+  text-align: center;
+}
+
+.photo-card .info-item {
+  margin-bottom: 4px;
+  font-size: 16px;
+}
+
+.photo-card .info-item b {
+  font-weight: bold;
+}
+
+.scroll-top-button {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: none;
+  background-color: transparent;
+  margin: 10px;
+  padding: 10px 20px;
+  text-align: center;
+  text-transform: uppercase;
+  transition: 0.5s;
+  background-size: 200% auto;
+  color: white;
+  box-shadow: 0 0 20px #eee;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.scroll-top-button:hover {
+  background-color: black;
+  color: #fff;
+  text-decoration: none;
+}
