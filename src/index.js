@@ -3,7 +3,7 @@ import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
 import { createImageCard } from './createImagesCard';
-import { scrollButton } from './scrollTopBtn';
+import scrollButton from './scrollTopBtn';
 
 const API_KEY = '37184134-6691b228a89f46b6be53e791a';
 const API_URL = 'https://pixabay.com/api/';
