@@ -40,7 +40,7 @@ export function createImageCard({
 
   return card;
 }
-function createInfoItem(label, value) {
+export function createInfoItem(label, value) {
   const infoItem = document.createElement('p');
   infoItem.classList.add('info-item');
 
