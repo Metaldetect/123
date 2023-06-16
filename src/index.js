@@ -8,7 +8,6 @@ import scrollButton from './js/scrollTopBtn';
 const API_KEY = '37184134-6691b228a89f46b6be53e791a';
 const API_URL = 'https://pixabay.com/api/';
 const IMAGES_PER_PAGE = 40;
-const MAX_PAGES = 3;
 
 let searchQuery = '';
 let currentPage = 1;
@@ -21,6 +20,11 @@ let isLoadingImages = false;
 const searchForm = document.querySelector('.search-form');
 const searchInput = document.querySelector('input[type="text"]');
 const gallery = document.querySelector('.gallery');
+
+const lightbox = new SimpleLightbox('.gallery a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 searchForm.addEventListener('submit', handleFormSubmit);
 
@@ -45,7 +49,7 @@ function calculateCardHeight() {
 calculateCardHeight();
 
 async function fetchImages(query) {
-  if (isLoadingImages || currentPage > MAX_PAGES) return;
+  if (isLoadingImages > currentPage) return;
   isLoadingImages = true;
 
   try {
@@ -82,7 +86,7 @@ async function fetchImages(query) {
 
       currentPage += 1;
 
-      if (currentPage > MAX_PAGES) {
+      if (currentPage > totalPage) {
         Notiflix.Notify.info(
           "Sorry, but you've reached the end of search results.",
           {
@@ -133,11 +137,6 @@ function displayImages(images) {
     }
   );
 
-  const lightbox = new SimpleLightbox('.gallery a', {
-    captionsData: 'alt',
-    captionDelay: 250,
-  });
-
   lightbox.refresh();
 }
 
@@ -146,12 +145,7 @@ function loadMoreImagesIfNearBottom() {
     document.documentElement.scrollHeight - window.innerHeight <=
     window.pageYOffset + 1;
 
-  if (
-    isScrolledToBottom &&
-    !isLoadingImages &&
-    currentPage <= totalPage &&
-    currentPage <= MAX_PAGES
-  ) {
+  if (isScrolledToBottom && !isLoadingImages && currentPage <= totalPage) {
     fetchImages(searchQuery);
   }
 }
