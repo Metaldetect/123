@@ -2,19 +2,21 @@ import axios from 'axios';
 import Notiflix from 'notiflix';
 import SimpleLightbox from 'simplelightbox';
 import 'simplelightbox/dist/simple-lightbox.min.css';
-import { createImageCard } from './createImagesCard';
-import scrollButton from './scrollTopBtn';
+import { createImageCard, createInfoItem } from './js/createImagesCard';
+import scrollButton from './js/scrollTopBtn';
 
 const API_KEY = '37184134-6691b228a89f46b6be53e791a';
 const API_URL = 'https://pixabay.com/api/';
 const IMAGES_PER_PAGE = 40;
-const LOAD_MORE_THRESHOLD = 300;
+const MAX_PAGES = 5;
 
 let searchQuery = '';
 let currentPage = 1;
 let totalImages = 0;
-let isLoading = false;
 let cardHeight = 0;
+let areImagesLoaded = false;
+let isLoadingImages = false;
+let loadedPages = 0;
 
 const searchForm = document.querySelector('.search-form');
 const searchInput = document.querySelector('input[type="text"]');
@@ -25,7 +27,9 @@ searchForm.addEventListener('submit', e => {
   searchQuery = searchInput.value.trim();
   if (searchQuery !== '') {
     currentPage = 1;
+    loadedPages = 0;
     gallery.innerHTML = '';
+    areImagesLoaded = false;
     fetchImages(searchQuery);
     searchInput.value = '';
   }
@@ -37,13 +41,12 @@ function calculateCardHeight() {
     cardHeight = firstCard.getBoundingClientRect().height;
   }
 }
-
 calculateCardHeight();
 
 async function fetchImages(query) {
   try {
-    if (isLoading) return;
-    isLoading = true;
+    if (isLoadingImages || loadedPages >= MAX_PAGES) return;
+    isLoadingImages = true;
 
     const response = await axios.get(
       `${API_URL}?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&page=${currentPage}&per_page=${IMAGES_PER_PAGE}`
@@ -75,29 +78,36 @@ async function fetchImages(query) {
 
       displayImages(images);
 
+      loadedPages += 1;
+
       if (currentPage * IMAGES_PER_PAGE < totalImages) {
-        currentPage + 1;
-      } else {
+        currentPage += 1;
+      }
+      if (loadedPages >= MAX_PAGES) {
         Notiflix.Notify.info(
-          "We're sorry, but you've reached the end of search results."
+          "We're sorry, but you've reached the end of search results.",
+          {
+            className: 'costom-notafication',
+          }
         );
       }
 
-      calculateCardHeight();
+      if (!areImagesLoaded) {
+        Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
+        areImagesLoaded = true;
+      }
     } else {
       Notiflix.Notify.failure(
         'Sorry, there are no images matching your search query. Please try again.'
       );
     }
-
-    Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
   } catch (error) {
     console.error('Error:', error);
     Notiflix.Notify.failure(
       'An error occurred while fetching images. Please try again later.'
     );
   } finally {
-    isLoading = false;
+    isLoadingImages = false;
   }
 }
 
@@ -134,11 +144,11 @@ function displayImages(images) {
 }
 
 function loadMoreImagesIfNearBottom() {
-  const isNearBottom =
-    window.innerHeight + window.scrollY >=
-    document.body.offsetHeight - LOAD_MORE_THRESHOLD;
+  const isScrolledToBottom =
+    document.documentElement.scrollHeight - window.innerHeight <=
+    window.pageYOffset + 1;
 
-  if (isNearBottom) {
+  if (isScrolledToBottom && !isLoadingImages) {
     fetchImages(searchQuery);
   }
 }
