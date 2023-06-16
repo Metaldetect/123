@@ -13,27 +13,28 @@ const MAX_PAGES = 3;
 let searchQuery = '';
 let currentPage = 1;
 let totalImages = 0;
+let totalPage = 0;
 let cardHeight = 0;
 let areImagesLoaded = false;
 let isLoadingImages = false;
-let loadedPages = 0;
 
 const searchForm = document.querySelector('.search-form');
 const searchInput = document.querySelector('input[type="text"]');
 const gallery = document.querySelector('.gallery');
 
-searchForm.addEventListener('submit', e => {
+searchForm.addEventListener('submit', handleFormSubmit);
+
+function handleFormSubmit(e) {
   e.preventDefault();
   searchQuery = searchInput.value.trim();
   if (searchQuery !== '') {
     currentPage = 1;
-    loadedPages = 0;
     gallery.innerHTML = '';
     areImagesLoaded = false;
     fetchImages(searchQuery);
     searchInput.value = '';
   }
-});
+}
 
 function calculateCardHeight() {
   const firstCard = document.querySelector('.gallery > div');
@@ -44,16 +45,17 @@ function calculateCardHeight() {
 calculateCardHeight();
 
 async function fetchImages(query) {
-  try {
-    if (isLoadingImages || loadedPages >= MAX_PAGES) return;
-    isLoadingImages = true;
+  if (isLoadingImages || currentPage > MAX_PAGES) return;
+  isLoadingImages = true;
 
+  try {
     const response = await axios.get(
       `${API_URL}?key=${API_KEY}&q=${query}&image_type=photo&orientation=horizontal&safesearch=true&page=${currentPage}&per_page=${IMAGES_PER_PAGE}`
     );
     const { hits, totalHits } = response.data;
 
     totalImages = totalHits;
+    totalPage = Math.ceil(totalHits / IMAGES_PER_PAGE);
 
     if (hits.length > 0) {
       const images = hits.map(
@@ -78,20 +80,16 @@ async function fetchImages(query) {
 
       displayImages(images);
 
-      loadedPages += 1;
+      currentPage += 1;
 
-      if (currentPage * IMAGES_PER_PAGE < totalImages) {
-        currentPage += 1;
-      }
-      if (loadedPages >= MAX_PAGES) {
+      if (currentPage > MAX_PAGES) {
         Notiflix.Notify.info(
-          "We're sorry, but you've reached the end of search results.",
+          "Sorry, but you've reached the end of search results.",
           {
             className: 'costom-notafication',
           }
         );
       }
-
       if (!areImagesLoaded) {
         Notiflix.Notify.success(`Hooray! We found ${totalHits} images.`);
         areImagesLoaded = true;
@@ -148,7 +146,12 @@ function loadMoreImagesIfNearBottom() {
     document.documentElement.scrollHeight - window.innerHeight <=
     window.pageYOffset + 1;
 
-  if (isScrolledToBottom && !isLoadingImages) {
+  if (
+    isScrolledToBottom &&
+    !isLoadingImages &&
+    currentPage <= totalPage &&
+    currentPage <= MAX_PAGES
+  ) {
     fetchImages(searchQuery);
   }
 }
