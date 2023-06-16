@@ -8,7 +8,7 @@ import scrollButton from './js/scrollTopBtn';
 const API_KEY = '37184134-6691b228a89f46b6be53e791a';
 const API_URL = 'https://pixabay.com/api/';
 const IMAGES_PER_PAGE = 40;
-const MAX_PAGES = 5;
+const MAX_PAGES = 3;
 
 let searchQuery = '';
 let currentPage = 1;
